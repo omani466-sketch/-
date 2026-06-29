@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f3460">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- حل مشكلة الأذونات -->
+    <meta http-equiv="Permissions-Policy" content="geolocation=*, camera=*, microphone=*">
+    
+    <title>نظام متابعة الأئمة - سلطنة عمان</title>
+    
+    <!-- أيقونات التطبيق -->
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕌</text></svg>">
+    
+    <!-- Manifest للتطبيق -->
+    <link rel="manifest" href="data:application/json,{
+        &quot;name&quot;: &quot;نظام متابعة الأئمة&quot;,
+        &quot;short_name&quot;: &quot;الأئمة&quot;,
+        &quot;description&quot;: &quot;نظام متابعة أئمة المساجد - سلطنة عمان&quot;,
+        &quot;start_url&quot;: &quot;.&quot;,
+        &quot;display&quot;: &quot;standalone&quot;,
+        &quot;background_color&quot;: &quot;#0f3460&quot;,
+        &quot;theme_color&quot;: &quot;#0f3460&quot;,
+        &quot;orientation&quot;: &quot;portrait&quot;,
+        &quot;icons&quot;: [
+            {&quot;src&quot;: &quot;data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕌</text></svg>&quot;,&quot;sizes&quot;: &quot;192x192&quot;,&quot;type&quot;: &quot;image/svg+xml&quot;}
+        ]
+    }">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== جميع الأنماط (مبسطة للجوال) ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            direction: rtl;
+            overflow-x: hidden;
+        }
+        /* شاشة تسجيل الدخول */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            padding: 20px;
+        }
+        .login-box {
+            background: rgba(255,255,255,0.95);
+            padding: 30px 25px;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: fadeInUp 0.6s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-box .logo { text-align: center; font-size: 48px; color: #0f3460; }
+        .login-box h1 { text-align: center; font-size: 22px; font-weight: 800; color: #0f3460; }
+        .login-box .subtitle { text-align: center; color: #888; font-size: 12px; margin-bottom: 20px; }
+        .login-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+            background: #f0f2f5;
+            border-radius: 14px;
+            padding: 4px;
+        }
+        .login-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border: none;
+            border-radius: 11px;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.3s;
+            background: transparent;
+            color: #888;
+        }
+        .login-tab.active {
+            background: #0f3460;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(15,52,96,0.3);
+        }
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Tajawal', sans-serif;
+            background: #f8f9fa;
+        }
+        .form-group input:focus {
+            border-color: #0f3460;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(15,52,96,0.1);
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-primary:active { transform: scale(0.97); }
+        .login-error {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        /* ===== واجهة النظام ===== */
+        .app-container { display: none; min-height: 100vh; padding-bottom: 20px; }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(180deg, #0f3460, #1a1a2e);
+            color: #fff;
+            padding: 20px 18px;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            transform: translateX(100%);
+        }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar-header { text-align: center; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
+        .sidebar-header .icon { font-size: 38px; display: block; }
+        .sidebar-header h2 { font-size: 18px; font-weight: 800; }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { margin-bottom: 4px; }
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border-radius: 12px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: 0.3s;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .sidebar-menu li a i { width: 20px; font-size: 16px; }
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .sidebar-menu li a.active { background: rgba(255,255,255,0.15); border-right: 3px solid #f1c40f; }
+        .sidebar-footer { margin-top: 18px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-footer button {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .main-content {
+            padding: 15px 16px 10px;
+            min-height: 100vh;
+            width: 100%;
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #e8ecf1;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .topbar .greeting h3 { font-size: 17px; font-weight: 800; color: #0f3460; }
+        .topbar .greeting p { color: #888; font-size: 11px; }
+        .topbar .admin-info { display: flex; align-items: center; gap: 10px; }
+        .topbar .admin-info .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: 700;
+        }
+        .topbar .admin-info .name { font-weight: 600; font-size: 13px; color: #1a1a2e; }
+        .topbar .admin-info .role { font-size: 10px; color: #888; }
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #0f3460;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        /* البطاقات والإحصائيات */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 14px 16px;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .stat-card .label { font-size: 11px; color: #888; font-weight: 500; }
+        .stat-card .value { font-size: 22px; font-weight: 800; color: #0f3460; margin-top: 2px; }
+        .stat-card .sub { font-size: 10px; color: #28a745; margin-top: 2px; }
+        .stat-card .icon-bg { float: left; font-size: 26px; opacity: 0.12; color: #0f3460; }
+        
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active-page { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .page-header h2 { font-size: 17px; font-weight: 800; color: #0f3460; }
+        
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Tajawal', sans-serif;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-success { background: #28a745; color: #fff; }
+        .btn-danger { background: #dc3545; color: #fff; }
+        .btn-warning { background: #f1c40f; color: #1a1a2e; }
+        .btn-primary-custom { background: #0f3460; color: #fff; }
+        .btn-outline { background: transparent; border: 2px solid #0f3460; color: #0f3460; }
+        .btn-sm { padding: 6px 12px; font-size: 11px; }
+        
+        .table-container {
+            background: #fff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        table thead { background: #f8f9fa; }
+        table th { padding: 10px; text-align: right; font-weight: 700; color: #555; border-bottom: 2px solid #e8ecf1; font-size: 10px; }
+        table td { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size: 11px; }
+        
+        .badge {
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-info { background: #d1ecf1; color: #0c5460; }
+        .badge-primary { background: #cce5ff; color: #004085; }
+        
+        .form-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        .form-modal.active { display: flex; }
+        .form-modal-content {
+            background: #fff;
+            padding: 25px 20px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: fadeInUp 0.3s ease;
+        }
+        .form-modal-content .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .form-modal-content .modal-header h3 { font-size: 17px; font-weight: 800; color: #0f3460; }
+        .form-modal-content .modal-header .close-btn {
+            background: none;
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            color: #888;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            font-weight: 500;
+            z-index: 3000;
+            display: none;
+            animation: slideUp 0.4s ease;
+            font-size: 13px;
+            text-align: center;
+        }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .report-card {
+            background: #fff;
+            padding: 14px 16px;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            margin-bottom: 12px;
+        }
+        .report-card h4 { font-size: 14px; color: #0f3460; margin-bottom: 5px; }
+        .report-card p { color: #666; font-size: 12px; }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e8ecf1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #0f3460, #28a745);
+            transition: width 0.6s ease;
+        }
+        
+        .camera-container {
+            background: #000;
+            border-radius: 14px;
+            overflow: hidden;
+            margin: 8px 0;
+            position: relative;
+            aspect-ratio: 4/3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .camera-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .camera-container .camera-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border: 3px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .camera-container .camera-status {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.75);
+            color: #fff;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            text-align: center;
+            width: 90%;
+            max-width: 300px;
+        }
+        
+        .location-info {
+            background: #f8f9fa;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin: 6px 0;
+            border-right: 3px solid #0f3460;
+        }
+        .location-info .coord { font-family: monospace; color: #0f3460; font-weight: 600; }
+        
+        .footer-text {
+            text-align: center;
+            padding: 18px 0 10px;
+            color: #888;
+            font-size: 11px;
+            border-top: 1px solid #e8ecf1;
+            margin-top: 18px;
+        }
+        .footer-text .designer { color: #0f3460; font-weight: 700; }
+        .footer-text .copyright { color: #666; }
+        
+        .imam-dashboard { display: grid; grid-template-columns: 1fr; gap: 14px; }
+        .imam-dashboard .full-width { grid-column: 1; }
+        
+        .prayer-status {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 6px 0;
+        }
+        .prayer-status .prayer-item {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #e8ecf1;
+            color: #888;
+        }
+        .prayer-status .prayer-item.present { background: #d4edda; color: #155724; }
+        .prayer-status .prayer-item.late { background: #fff3cd; color: #856404; }
+        .prayer-status .prayer-item.absent { background: #f8d7da; color: #721c24; }
+        
+        .install-banner {
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .install-banner.show { display: flex; }
+        .install-banner .icon { font-size: 28px; }
+        .install-banner .text { flex: 1; font-size: 13px; }
+        .install-banner .text strong { display: block; font-size: 14px; }
+        .install-banner .btn-install {
+            background: #f1c40f;
+            color: #1a1a2e;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        @media (min-width: 768px) {
+            .main-content { margin-right: 270px; padding: 20px 25px; }
+            .sidebar { transform: translateX(0) !important; }
+            .sidebar-toggle { display: none !important; }
+            .imam-dashboard { grid-template-columns: 1fr 1fr; }
+            .imam-dashboard .full-width { grid-column: 1 / -1; }
+        }
+        @media (max-width: 767px) {
+            .form-row { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        /* الوضع المظلم */
+        @media (prefers-color-scheme: dark) {
+            body { background: #1a1a2e; }
+            .stat-card, .report-card, .table-container { background: #2a2a3e; color: #e8e8e8; }
+            .stat-card .label, .report-card p { color: #aaa; }
+            .stat-card .value, .page-header h2 { color: #f1c40f; }
+            .table-container table thead { background: #3a3a4e; }
+            .table-container table th { color: #e8e8e8; }
+            .table-container table td { color: #d0d0d0; border-bottom-color: #3a3a4e; }
+            .form-modal-content { background: #2a2a3e; color: #e8e8e8; }
+            .form-modal-content .modal-header h3 { color: #f1c40f; }
+            .form-modal-content .form-group label { color: #ccc; }
+            .form-modal-content .form-group input { background: #3a3a4e; color: #e8e8e8; border-color: #4a4a5e; }
+            .location-info { background: #2a2a3e; color: #e8e8e8; }
+            .topbar { border-bottom-color: #3a3a4e; }
+            .footer-text { border-top-color: #3a3a4e; color: #888; }
+            .login-box { background: rgba(40,40,60,0.95); }
+            .login-box h1 { color: #f1c40f; }
+            .login-tabs { background: #3a3a4e; }
+            .login-tab { color: #aaa; }
+            .login-tab.active { background: #0f3460; color: #fff; }
+            .form-group input { background: #3a3a4e; color: #e8e8e8; border-color: #4a4a5e; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== شاشة تسجيل الدخول ===== -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-box">
+            <div class="logo">🕌</div>
+            <h1>نظام متابعة الأئمة</h1>
+            <div class="subtitle">سلطنة عمان - وزارة الأوقاف والشؤون الدينية</div>
+
+            <div class="login-tabs">
+                <button class="login-tab active" data-role="admin" onclick="switchLoginTab('admin')">
+                    <i class="fas fa-user-cog"></i> مسؤول
+                </button>
+                <button class="login-tab" data-role="imam" onclick="switchLoginTab('imam')">
+                    <i class="fas fa-user-tie"></i> إمام
+                </button>
+            </div>
+
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <div class="form-group">
+                    <label id="loginLabel">👤 اسم المستخدم</label>
+                    <input type="text" id="loginUsername" placeholder="أدخل اسم المستخدم" required>
+                </div>
+                <div class="form-group">
+                    <label>🔒 كلمة المرور</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary"><i class="fas fa-sign-in-alt"></i> دخول</button>
+                <div class="login-error" id="loginError">❌ بيانات الدخول غير صحيحة</div>
+            </form>
+
+            <div style="margin-top:10px;font-size:11px;color:#aaa;text-align:center;">
+                <div>المسؤول العام: admin | 123456</div>
+                <div>مشرف المتابعة: supervisor | 123456</div>
+                <div>الإمام: ahmed | 123456</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== شاشة النظام ===== -->
+    <div class="app-container" id="appContainer">
+
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="icon">🕌</span>
+                <h2>نظام الأئمة</h2>
+                <span id="userRoleDisplay">لوحة التحكم</span>
+            </div>
+            <ul class="sidebar-menu" id="sidebarMenu"></ul>
+            <div class="sidebar-footer">
+                <button onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+            </div>
+        </nav>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <div class="greeting">
+                        <h3 id="pageTitle">📊 لوحة القيادة</h3>
+                        <p id="currentDate"></p>
+                    </div>
+                </div>
+                <div class="admin-info">
+                    <div>
+                        <div class="name" id="userNameDisplay">المسؤول</div>
+                        <div class="role" id="userRoleText">مدير النظام</div>
+                    </div>
+                    <div class="avatar" id="userAvatar">أ</div>
+                </div>
+            </header>
+
+            <!-- ===== صفحات النظام ===== -->
+            <div class="page active-page" id="page-dashboard">
+                <div class="stats-grid" id="statsGrid"></div>
+                <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px;">
+                    <div class="report-card">
+                        <h4><i class="fas fa-calendar-check" style="color:#28a745;"></i> نسبة الالتزام اليومية</h4>
+                        <p>عدد الصلوات المسجلة اليوم</p>
+                        <div style="font-size:24px;font-weight:800;color:#0f3460;margin:3px 0;" id="todayAttendance">0</div>
+                        <div class="progress-bar"><div class="fill" id="todayProgress" style="width:0%;"></div></div>
+                    </div>
+                    <div class="report-card">
+                        <h4><i class="fas fa-clock" style="color:#f1c40f;"></i> متوسط الالتزام الشهري</h4>
+                        <p>نسبة الالتزام لجميع الأئمة</p>
+                        <div style="font-size:24px;font-weight:800;color:#0f3460;margin:3px 0;" id="avgCommitment">0%</div>
+                        <div class="progress-bar"><div class="fill" id="avgProgress" style="width:0%;"></div></div>
+                    </div>
+                </div>
+                <div class="report-card" style="margin-top:14px;">
+                    <h4>📋 آخر نشاطات الأئمة</h4>
+                    <div id="recentActivity" style="margin-top:6px;"></div>
+                </div>
+            </div>
+
+            <div class="page" id="page-users">
+                <div class="page-header">
+                    <h2><i class="fas fa-users-cog"></i> إدارة المستخدمين</h2>
+                    <button class="btn btn-success" onclick="openUserForm()"><i class="fas fa-plus"></i> إضافة</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>#</th><th>الاسم</th><th>اسم الدخول</th><th>الصلاحية</th><th>الإجراءات</th></tr></thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page" id="page-imams">
+                <div class="page-header">
+                    <h2><i class="fas fa-users"></i> إدارة الأئمة</h2>
+                    <button class="btn btn-success" onclick="openImamForm()"><i class="fas fa-plus"></i> إضافة</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>#</th><th>الاسم</th><th>الرقم الوظيفي</th><th>المسجد</th><th>الإجراءات</th></tr></thead>
+                        <tbody id="imamsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page" id="page-mosques">
+                <div class="page-header">
+                    <h2><i class="fas fa-place-of-worship"></i> إدارة المساجد</h2>
+                    <button class="btn btn-success" onclick="openMosqueForm()"><i class="fas fa-plus"></i> إضافة</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>#</th><th>اسم المسجد</th><th>المحافظة</th><th>الولاية</th><th>الإجراءات</th></tr></thead>
+                        <tbody id="mosquesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page" id="page-attendance">
+                <div class="page-header">
+                    <h2><i class="fas fa-clipboard-check"></i> سجل الحضور</h2>
+                    <button class="btn btn-outline btn-sm" onclick="filterAttendance()"><i class="fas fa-filter"></i> تصفية</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>الإمام</th><th>الصلاة</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+                        <tbody id="attendanceTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page" id="page-reports">
+                <div class="page-header">
+                    <h2><i class="fas fa-file-alt"></i> التقارير</h2>
+                    <button class="btn btn-primary-custom" onclick="generateReport()"><i class="fas fa-download"></i> تحميل</button>
+                </div>
+                <div id="reportsContainer"></div>
+            </div>
+
+            <div class="page" id="page-settings">
+                <div class="page-header"><h2><i class="fas fa-cog"></i> إعدادات النظام</h2></div>
+                <div class="report-card">
+                    <h4>⚙️ الإعدادات العامة</h4>
+                    <div style="margin-top:10px;">
+                        <div class="form-group">
+                            <label>اسم النظام</label>
+                            <input type="text" id="systemName" value="نظام متابعة أئمة المساجد">
+                        </div>
+                        <div class="form-group">
+                            <label>الجهة المشرفة</label>
+                            <input type="text" id="systemAuthority" value="وزارة الأوقاف - سلطنة عمان">
+                        </div>
+                        <button class="btn btn-primary-custom" onclick="saveSettings()"><i class="fas fa-save"></i> حفظ</button>
+                    </div>
+                </div>
+                <div class="report-card">
+                    <h4>📊 إحصائيات النظام</h4>
+                    <div id="systemStats" style="margin-top:8px;font-size:13px;"></div>
+                </div>
+            </div>
+
+            <!-- ===== صفحة الإمام ===== -->
+            <div class="page" id="page-imam-dashboard">
+                <div class="install-banner" id="installBanner">
+                    <span class="icon">📱</span>
+                    <div class="text"><strong>ثبّت التطبيق</strong> للحصول على تجربة أسرع</div>
+                    <button class="btn-install" id="installButton">تثبيت</button>
+                </div>
+
+                <div class="imam-dashboard">
+                    <div class="report-card full-width">
+                        <h4><i class="fas fa-user-circle"></i> بياناتي الشخصية</h4>
+                        <div id="imamProfileData" style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:13px;"></div>
+                    </div>
+
+                    <div class="report-card">
+                        <h4><i class="fas fa-camera"></i> إثبات الحضور</h4>
+                        <div class="camera-container" id="cameraContainer">
+                            <video id="video" autoplay playsinline></video>
+                            <div class="camera-overlay"></div>
+                            <div class="camera-status" id="cameraStatus">⏳ جاري تشغيل الكاميرا...</div>
+                        </div>
+                        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+                            <button class="btn btn-success" onclick="captureAttendance()" style="flex:1;">
+                                <i class="fas fa-camera"></i> تسجيل الحضور
+                            </button>
+                            <button class="btn btn-warning" onclick="toggleCamera()">
+                                <i class="fas fa-sync"></i>
+                            </button>
+                        </div>
+                        <div id="attendanceResult" style="margin-top:6px;font-size:13px;"></div>
+                    </div>
+
+                    <div class="report-card">
+                        <h4><i class="fas fa-map-marker-alt"></i> الموقع الحالي</h4>
+                        <div id="locationDisplay" class="location-info">
+                            <div>⏳ جاري تحديد الموقع...</div>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="getLocation()" style="margin-top:6px;">
+                            <i class="fas fa-location-arrow"></i> تحديث
+                        </button>
+                    </div>
+
+                    <div class="report-card full-width">
+                        <h4><i class="fas fa-calendar-alt"></i> سجل حضوري اليوم</h4>
+                        <div class="prayer-status" id="todayPrayerStatus"></div>
+                        <div style="margin-top:6px;font-size:12px;color:#888;" id="todayAttendanceSummary"></div>
+                    </div>
+
+                    <div class="report-card full-width">
+                        <h4><i class="fas fa-chart-line"></i> نسبة التزامي</h4>
+                        <div id="imamStats" style="margin-top:4px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-text">
+                <div class="designer">تصميم: إبراهيم بن حمود الراشدي</div>
+                <div class="copyright">جميع الحقوق محفوظة © 2026</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ===== نوافذ منبثقة ===== -->
+    <div class="form-modal" id="userModal">
+        <div class="form-modal-content">
+            <div class="modal-header">
+                <h3 id="userModalTitle">إضافة مستخدم</h3>
+                <button class="close-btn" onclick="closeModal('userModal')">&times;</button>
+            </div>
+            <form id="userForm" onsubmit="return saveUser(event)">
+                <input type="hidden" id="editUserId">
+                <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="userFullName" required></div>
+                <div class="form-group"><label>اسم الدخول *</label><input type="text" id="userUsername" required></div>
+                <div class="form-group"><label>الرقم المدني *</label><input type="text" id="userCivilId" required></div>
+                <div class="form-group"><label>كلمة المرور *</label><input type="password" id="userPassword" required></div>
+                <div class="form-group">
+                    <label>الصلاحية *</label>
+                    <select id="userRole" required>
+                        <option value="">اختر</option>
+                        <option value="مسؤول عام">مسؤول عام</option>
+                        <option value="مسؤول">مسؤول</option>
+                        <option value="مشرف متابعة">مشرف متابعة</option>
+                        <option value="إمام">إمام</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">💾 حفظ</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="form-modal" id="imamModal">
+        <div class="form-modal-content">
+            <div class="modal-header">
+                <h3 id="imamModalTitle">إضافة إمام</h3>
+                <button class="close-btn" onclick="closeModal('imamModal')">&times;</button>
+            </div>
+            <form id="imamForm" onsubmit="return saveImam(event)">
+                <input type="hidden" id="editImamId">
+                <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="imamName" required></div>
+                <div class="form-group"><label>الرقم المدني *</label><input type="text" id="imamCivilId" required></div>
+                <div class="form-group"><label>الرقم الوظيفي *</label><input type="text" id="imamJobId" required></div>
+                <div class="form-group"><label>المسجد الحالي *</label><select id="imamMosque" required></select></div>
+                <button type="submit" class="btn-primary">💾 حفظ</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="form-modal" id="mosqueModal">
+        <div class="form-modal-content">
+            <div class="modal-header">
+                <h3 id="mosqueModalTitle">إضافة مسجد</h3>
+                <button class="close-btn" onclick="closeModal('mosqueModal')">&times;</button>
+            </div>
+            <form id="mosqueForm" onsubmit="return saveMosque(event)">
+                <input type="hidden" id="editMosqueId">
+                <div class="form-group"><label>اسم المسجد *</label><input type="text" id="mosqueName" required></div>
+                <div class="form-group">
+                    <label>المحافظة *</label>
+                    <select id="mosqueGovernorate" required>
+                        <option value="">اختر</option>
+                        <option value="مسقط">مسقط</option>
+                        <option value="الداخلية">الداخلية</option>
+                        <option value="الشرقية الشمالية">الشرقية الشمالية</option>
+                        <option value="الشرقية الجنوبية">الشرقية الجنوبية</option>
+                        <option value="الباطنة">الباطنة</option>
+                        <option value="الظاهرة">الظاهرة</option>
+                        <option value="الوسطى">الوسطى</option>
+                        <option value="ظفار">ظفار</option>
+                        <option value="مسندم">مسندم</option>
+                        <option value="البريمي">البريمي</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>الولاية *</label><input type="text" id="mosqueWilayat" required></div>
+                <div class="form-group"><label>خط الطول</label><input type="text" id="mosqueLat" placeholder="مثال: 23.5880"></div>
+                <div class="form-group"><label>خط العرض</label><input type="text" id="mosqueLng" placeholder="مثال: 58.3829"></div>
+                <button type="submit" class="btn-primary">💾 حفظ</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============================================================
+        // ===== البيانات الأساسية =====
+        // ============================================================
+        let data = {
+            users: [
+                { id: 1, fullName: 'إبراهيم بن حمود الراشدي', username: 'admin', password: '123456', civilId: '100000001', role: 'مسؤول عام', imamId: null },
+                { id: 2, fullName: 'مشرف المتابعة', username: 'supervisor', password: '123456', civilId: '100000002', role: 'مشرف متابعة', imamId: null },
+                { id: 3, fullName: 'أحمد بن خالد النور', username: 'ahmed', password: '123456', civilId: '123456789', role: 'إمام', imamId: 1 }
+            ],
+            imams: [
+                { id: 1, name: 'أحمد بن خالد النور', civilId: '123456789', jobId: 'IM-001', mosqueId: 1 },
+                { id: 2, name: 'خالد بن سعيد السالم', civilId: '987654321', jobId: 'IM-002', mosqueId: 1 },
+                { id: 3, name: 'سعيد بن محمد الحسن', civilId: '456789123', jobId: 'IM-003', mosqueId: 2 }
+            ],
+            mosques: [
+                { id: 1, name: 'جامع السلطان قابوس الأكبر', governorate: 'مسقط', wilayat: 'بوشر', lat: '23.5880', lng: '58.3829' },
+                { id: 2, name: 'مسجد الرحمة', governorate: 'مسقط', wilayat: 'مطرح', lat: '23.6100', lng: '58.5400' },
+                { id: 3, name: 'جامع التقوى', governorate: 'الداخلية', wilayat: 'نزوى', lat: '22.9333', lng: '57.5333' }
+            ],
+            attendance: [],
+            idCounter: { users: 4, imams: 4, mosques: 4, attendance: 1 },
+            currentUser: null,
+            currentRole: null,
+            cameraStream: null,
+            isCameraActive: false,
+            settings: { systemName: 'نظام متابعة أئمة المساجد', authority: 'وزارة الأوقاف - سلطنة عمان', adminName: 'إبراهيم بن حمود الراشدي' },
+            deferredPrompt: null
+        };
+
+        const PRAYERS = ['الفجر', 'الظهر', 'العصر', 'المغرب', 'العشاء'];
+        let currentLocation = null;
+
+        // ============================================================
+        // ===== PWA - تثبيت التطبيق =====
+        // ============================================================
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            data.deferredPrompt = e;
+            document.getElementById('installBanner').classList.add('show');
+        });
+
+        document.getElementById('installButton').addEventListener('click', async () => {
+            if (data.deferredPrompt) {
+                data.deferredPrompt.prompt();
+                const result = await data.deferredPrompt.userChoice;
+                if (result.outcome === 'accepted') {
+                    document.getElementById('installBanner').classList.remove('show');
+                    showToast('✅ تم تثبيت التطبيق', 'success');
+                }
+                data.deferredPrompt = null;
+            }
+        });
+
+        // ============================================================
+        // ===== وظائف مساعدة =====
+        // ============================================================
+        function getMosqueName(id) {
+            const m = data.mosques.find(m => m.id === id);
+            return m ? m.name : 'غير محدد';
+        }
+
+        function getImamName(id) {
+            const i = data.imams.find(i => i.id === id);
+            return i ? i.name : 'غير محدد';
+        }
+
+        function getUserByUsername(username) {
+            return data.users.find(u => u.username === username);
+        }
+
+        function getImamById(id) {
+            return data.imams.find(i => i.id === id);
+        }
+
+        function getMosqueById(id) {
+            return data.mosques.find(m => m.id === id);
+        }
+
+        function getImamsByMosque(mosqueId) {
+            return data.imams.filter(i => i.mosqueId === mosqueId);
+        }
+
+        function getToday() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        function getCurrentTime() {
+            return new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        function generateId(collection) {
+            return ++data.idCounter[collection];
+        }
+
+        function isAdmin() {
+            return data.currentRole === 'مسؤول عام' || data.currentRole === 'مسؤول';
+        }
+
+        function isSuperAdmin() {
+            return data.currentRole === 'مسؤول عام';
+        }
+
+        // ============================================================
+        // ===== تسجيل الدخول =====
+        // ============================================================
+        let loginRole = 'admin';
+
+        function switchLoginTab(role) {
+            loginRole = role;
+            document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.login-tab[data-role="${role}"]`).classList.add('active');
+            const label = document.getElementById('loginLabel');
+            const usernameField = document.getElementById('loginUsername');
+            if (role === 'admin') {
+                label.textContent = '👤 اسم المستخدم (مسؤول)';
+                usernameField.placeholder = 'أدخل اسم المستخدم';
+            } else {
+                label.textContent = '👤 اسم المستخدم (إمام)';
+                usernameField.placeholder = 'أدخل اسم المستخدم';
+            }
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            const user = getUserByUsername(username);
+
+            if (loginRole === 'admin') {
+                if (user && user.password === password && (user.role === 'مسؤول عام' || user.role === 'مسؤول' || user.role === 'مشرف متابعة')) {
+                    data.currentUser = user;
+                    data.currentRole = user.role;
+                    enterApp();
+                } else {
+                    showLoginError('بيانات الدخول غير صحيحة للمسؤول');
+                }
+            } else {
+                if (user && user.password === password && user.role === 'إمام') {
+                    const imam = getImamById(user.imamId);
+                    if (imam) {
+                        data.currentUser = imam;
+                        data.currentRole = 'إمام';
+                        enterApp();
+                    } else {
+                        showLoginError('لم يتم ربط هذا المستخدم بإمام');
+                    }
+                } else {
+                    showLoginError('بيانات الدخول غير صحيحة للإمام');
+                }
+            }
+            return false;
+        }
+
+        function showLoginError(msg) {
+            const el = document.getElementById('loginError');
+            el.textContent = '❌ ' + msg;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        function enterApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
+            document.getElementById('currentDate').textContent =
+                new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            const menu = document.getElementById('sidebarMenu');
+            const userName = data.currentUser.fullName || data.currentUser.name || 'المستخدم';
+
+            document.getElementById('userNameDisplay').textContent = userName;
+            document.getElementById('userRoleText').textContent = data.currentRole || 'مستخدم';
+            document.getElementById('userRoleDisplay').textContent = data.currentRole || 'لوحة التحكم';
+            document.getElementById('userAvatar').textContent = userName.charAt(0);
+
+            if (isSuperAdmin() || data.currentRole === 'مسؤول') {
+                menu.innerHTML = `
+                    <li><a class="active" data-page="dashboard" onclick="showPage('dashboard')"><i class="fas fa-chart-pie"></i> لوحة القيادة</a></li>
+                    <li><a data-page="users" onclick="showPage('users')"><i class="fas fa-users-cog"></i> المستخدمين</a></li>
+                    <li><a data-page="imams" onclick="showPage('imams')"><i class="fas fa-users"></i> الأئمة</a></li>
+                    <li><a data-page="mosques" onclick="showPage('mosques')"><i class="fas fa-place-of-worship"></i> المساجد</a></li>
+                    <li><a data-page="attendance" onclick="showPage('attendance')"><i class="fas fa-clipboard-check"></i> الحضور</a></li>
+                    <li><a data-page="reports" onclick="showPage('reports')"><i class="fas fa-file-alt"></i> التقارير</a></li>
+                    <li><a data-page="settings" onclick="showPage('settings')"><i class="fas fa-cog"></i> الإعدادات</a></li>
+                `;
+                showPage('dashboard');
+            } else if (data.currentRole === 'مشرف متابعة') {
+                menu.innerHTML = `
+                    <li><a class="active" data-page="dashboard" onclick="showPage('dashboard')"><i class="fas fa-chart-pie"></i> لوحة القيادة</a></li>
+                    <li><a data-page="imams" onclick="showPage('imams')"><i class="fas fa-users"></i> الأئمة</a></li>
+                    <li><a data-page="mosques" onclick="showPage('mosques')"><i class="fas fa-place-of-worship"></i> المساجد</a></li>
+                    <li><a data-page="attendance" onclick="showPage('attendance')"><i class="fas fa-clipboard-check"></i> الحضور</a></li>
+                    <li><a data-page="reports" onclick="showPage('reports')"><i class="fas fa-file-alt"></i> التقارير</a></li>
+                `;
+                showPage('dashboard');
+            } else if (data.currentRole === 'إمام') {
+                menu.innerHTML = `
+                    <li><a class="active" data-page="imam-dashboard" onclick="showPage('imam-dashboard')"><i class="fas fa-user-tie"></i> لوحة الإمام</a></li>
+                    <li><a data-page="attendance" onclick="showPage('attendance')"><i class="fas fa-clipboard-check"></i> سجل حضوري</a></li>
+                `;
+                showPage('imam-dashboard');
+                setTimeout(() => {
+                    startCamera();
+                    getLocation();
+                }, 1000);
+            }
+
+            populateSelects();
+            updateAll();
+        }
+
+        function handleLogout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                if (data.cameraStream) {
+                    data.cameraStream.getTracks().forEach(t => t.stop());
+                    data.isCameraActive = false;
+                }
+                document.getElementById('appContainer').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'flex';
+                data.currentUser = null;
+                data.currentRole = null;
+            }
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            const target = document.getElementById('page-' + page);
+            if (target) target.classList.add('active-page');
+
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            const menuItem = document.querySelector(`.sidebar-menu a[data-page="${page}"]`);
+            if (menuItem) menuItem.classList.add('active');
+
+            const titles = {
+                dashboard: '📊 لوحة القيادة',
+                users: '👥 المستخدمين',
+                imams: '👤 الأئمة',
+                mosques: '🕌 المساجد',
+                attendance: '📋 الحضور',
+                reports: '📈 التقارير',
+                settings: '⚙️ الإعدادات',
+                'imam-dashboard': '👤 لوحة الإمام'
+            };
+            document.getElementById('pageTitle').textContent = titles[page] || 'لوحة القيادة';
+
+            if (page === 'dashboard') updateDashboard();
+            if (page === 'users') renderUsers();
+            if (page === 'imams') renderImams();
+            if (page === 'mosques') renderMosques();
+            if (page === 'attendance') renderAttendance();
+            if (page === 'reports') renderReports();
+            if (page === 'settings') updateSettingsPage();
+            if (page === 'imam-dashboard') updateImamDashboard();
+
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+
+        function populateSelects() {
+            const mosqueSelect = document.getElementById('imamMosque');
+            mosqueSelect.innerHTML = '<option value="">اختر المسجد</option>';
+            data.mosques.forEach(m => {
+                mosqueSelect.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+            });
+        }
+
+        function updateAll() {
+            updateDashboard();
+            renderUsers();
+            renderImams();
+            renderMosques();
+            renderAttendance();
+            renderReports();
+            if (data.currentRole === 'إمام') updateImamDashboard();
+        }
+
+        // ============================================================
+        // ===== لوحة القيادة =====
+        // ============================================================
+        function updateDashboard() {
+            const totalUsers = data.users.length;
+            const totalImams = data.imams.length;
+            const totalMosques = data.mosques.length;
+            const totalAttendance = data.attendance.length;
+            const todayAtt = data.attendance.filter(a => a.date === getToday());
+            const todayCount = todayAtt.length;
+
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card">
+                    <div class="icon-bg"><i class="fas fa-users-cog"></i></div>
+                    <div class="label">المستخدمين</div>
+                    <div class="value">${totalUsers}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-bg"><i class="fas fa-users"></i></div>
+                    <div class="label">الأئمة</div>
+                    <div class="value">${totalImams}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-bg"><i class="fas fa-place-of-worship"></i></div>
+                    <div class="label">المساجد</div>
+                    <div class="value">${totalMosques}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-bg"><i class="fas fa-clipboard-check"></i></div>
+                    <div class="label">حضور اليوم</div>
+                    <div class="value">${todayCount}</div>
+                    <div class="sub ${todayCount < 5 ? 'sub danger' : ''}" style="color:${todayCount < 5 ? '#dc3545' : '#28a745'}">
+                        ${todayCount >= 5 ? '✅ جيد' : '⚠️ منخفض'}
+                    </div>
+                </div>
+            `;
+
+            const totalPrayers = totalImams * PRAYERS.length;
+            const todayProgress = totalPrayers > 0 ? Math.min((todayCount / totalPrayers) * 100, 100) : 0;
+            document.getElementById('todayAttendance').textContent = `${todayCount} / ${totalPrayers}`;
+            document.getElementById('todayProgress').style.width = todayProgress + '%';
+
+            const monthStart = getToday().slice(0, 7);
+            const monthAtt = data.attendance.filter(a => a.date.startsWith(monthStart));
+            const totalPossible = totalImams * PRAYERS.length * 30;
+            const avg = totalPossible > 0 ? Math.min((monthAtt.length / totalPossible) * 100, 100) : 0;
+            document.getElementById('avgCommitment').textContent = Math.round(avg) + '%';
+            document.getElementById('avgProgress').style.width = avg + '%';
+
+            const recent = [...data.attendance].sort((a, b) => b.id - a.id).slice(0, 6);
+            document.getElementById('recentActivity').innerHTML = recent.map(a => `
+                <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0f0f0;font-size:12px;flex-wrap:wrap;gap:4px;">
+                    <span>👤 ${getImamName(a.imamId)}</span>
+                    <span>${a.prayer} <span class="badge ${a.status === 'حاضر' ? 'badge-success' : a.status === 'متأخر' ? 'badge-warning' : 'badge-danger'}">${a.status}</span></span>
+                    <span style="color:#888;font-size:10px;">${a.date}</span>
+                </div>
+            `).join('');
+        }
+
+        // ============================================================
+        // ===== إدارة المستخدمين =====
+        // ============================================================
+        function renderUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            if (data.users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:25px;color:#888;">لا يوجد مستخدمين</td></tr>`;
+                return;
+            }
+            const roleColors = {
+                'مسؤول عام': 'badge-primary',
+                'مسؤول': 'badge-info',
+                'مشرف متابعة': 'badge-warning',
+                'إمام': 'badge-success'
+            };
+            tbody.innerHTML = data.users.map((u, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${u.fullName}</strong></td>
+                    <td>${u.username}</td>
+                    <td><span class="badge ${roleColors[u.role] || 'badge-info'}">${u.role}</span></td>
+                    <td>
+                        ${isSuperAdmin() ? `
+                        <button class="btn btn-warning btn-sm" onclick="editUser(${u.id})"><i class="fas fa-edit"></i></button>
+                        ${u.id !== 1 ? `<button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id})"><i class="fas fa-trash"></i></button>` : ''}
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openUserForm(userData) {
+            document.getElementById('userModalTitle').textContent = userData ? 'تعديل مستخدم' : 'إضافة مستخدم';
+            document.getElementById('editUserId').value = userData ? userData.id : '';
+            document.getElementById('userFullName').value = userData ? userData.fullName : '';
+            document.getElementById('userUsername').value = userData ? userData.username : '';
+            document.getElementById('userCivilId').value = userData ? userData.civilId : '';
+            document.getElementById('userPassword').value = userData ? userData.password : '';
+            document.getElementById('userRole').value = userData ? userData.role : '';
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function editUser(id) {
+            const user = data.users.find(u => u.id === id);
+            if (user) openUserForm(user);
+        }
+
+        function saveUser(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editUserId').value);
+            const fullName = document.getElementById('userFullName').value.trim();
+            const username = document.getElementById('userUsername').value.trim();
+            const civilId = document.getElementById('userCivilId').value.trim();
+            const password = document.getElementById('userPassword').value.trim();
+            const role = document.getElementById('userRole').value;
+
+            if (!fullName || !username || !civilId || !password || !role) {
+                showToast('يرجى تعبئة جميع الحقول المطلوبة', 'error');
+                return false;
+            }
+
+            if (id) {
+                const user = data.users.find(u => u.id === id);
+                if (user) {
+                    Object.assign(user, { fullName, username, civilId, password, role });
+                    showToast('تم تعديل المستخدم', 'success');
+                }
+            } else {
+                if (getUserByUsername(username)) {
+                    showToast('اسم المستخدم موجود', 'error');
+                    return false;
+                }
+                data.users.push({
+                    id: generateId('users'),
+                    fullName,
+                    username,
+                    password,
+                    civilId,
+                    phone: '',
+                    email: '',
+                    jobTitle: '',
+                    role,
+                    imamId: null
+                });
+                showToast('تم إضافة المستخدم', 'success');
+            }
+
+            closeModal('userModal');
+            renderUsers();
+            updateDashboard();
+            return false;
+        }
+
+        function deleteUser(id) {
+            if (id === 1) {
+                showToast('لا يمكن حذف المسؤول العام', 'error');
+                return;
+            }
+            if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
+                data.users = data.users.filter(u => u.id !== id);
+                renderUsers();
+                updateDashboard();
+                showToast('تم حذف المستخدم', 'success');
+            }
+        }
+
+        // ============================================================
+        // ===== إدارة الأئمة =====
+        // ============================================================
+        function renderImams() {
+            const tbody = document.getElementById('imamsTableBody');
+            if (data.imams.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:25px;color:#888;">لا يوجد أئمة</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = data.imams.map((i, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${i.name}</strong></td>
+                    <td>${i.jobId}</td>
+                    <td>${getMosqueName(i.mosqueId)}</td>
+                    <td>
+                        ${isAdmin() ? `
+                        <button class="btn btn-warning btn-sm" onclick="editImam(${i.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteImam(${i.id})"><i class="fas fa-trash"></i></button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openImamForm(imamData) {
+            document.getElementById('imamModalTitle').textContent = imamData ? 'تعديل إمام' : 'إضافة إمام';
+            document.getElementById('editImamId').value = imamData ? imamData.id : '';
+            document.getElementById('imamName').value = imamData ? imamData.name : '';
+            document.getElementById('imamCivilId').value = imamData ? imamData.civilId : '';
+            document.getElementById('imamJobId').value = imamData ? imamData.jobId : '';
+            document.getElementById('imamMosque').value = imamData ? imamData.mosqueId : '';
+            document.getElementById('imamModal').classList.add('active');
+        }
+
+        function editImam(id) {
+            const imam = getImamById(id);
+            if (imam) openImamForm(imam);
+        }
+
+        function saveImam(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editImamId').value);
+            const name = document.getElementById('imamName').value.trim();
+            const civilId = document.getElementById('imamCivilId').value.trim();
+            const jobId = document.getElementById('imamJobId').value.trim();
+            const mosqueId = parseInt(document.getElementById('imamMosque').value);
+
+            if (!name || !civilId || !jobId || !mosqueId) {
+                showToast('يرجى تعبئة الحقول المطلوبة', 'error');
+                return false;
+            }
+
+            if (id) {
+                const imam = getImamById(id);
+                if (imam) {
+                    Object.assign(imam, { name, civilId, jobId, mosqueId });
+                    showToast('تم تعديل الإمام', 'success');
+                }
+            } else {
+                const newId = generateId('imams');
+                data.imams.push({
+                    id: newId,
+                    name,
+                    civilId,
+                    jobId,
+                    phone: '',
+                    mosqueId,
+                    previousMosqueId: null,
+                    username: name.split(' ')[0].toLowerCase() + newId,
+                    password: '123456'
+                });
+                data.users.push({
+                    id: generateId('users'),
+                    fullName: name,
+                    username: name.split(' ')[0].toLowerCase() + newId,
+                    password: '123456',
+                    civilId: civilId,
+                    phone: '',
+                    email: '',
+                    jobTitle: 'إمام مسجد',
+                    role: 'إمام',
+                    imamId: newId
+                });
+                showToast('تم إضافة الإمام وحسابه', 'success');
+            }
+
+            closeModal('imamModal');
+            populateSelects();
+            renderImams();
+            renderUsers();
+            updateDashboard();
+            return false;
+        }
+
+        function deleteImam(id) {
+            if (confirm('هل أنت متأكد من حذف هذا الإمام؟')) {
+                data.users = data.users.filter(u => u.imamId !== id);
+                data.imams = data.imams.filter(i => i.id !== id);
+                data.attendance = data.attendance.filter(a => a.imamId !== id);
+                populateSelects();
+                renderImams();
+                renderUsers();
+                renderAttendance();
+                updateDashboard();
+                showToast('تم حذف الإمام', 'success');
+            }
+        }
+
+        // ============================================================
+        // ===== إدارة المساجد =====
+        // ============================================================
+        function renderMosques() {
+            const tbody = document.getElementById('mosquesTableBody');
+            if (data.mosques.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:25px;color:#888;">لا يوجد مساجد</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = data.mosques.map((m, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${m.name}</strong></td>
+                    <td>${m.governorate}</td>
+                    <td>${m.wilayat}</td>
+                    <td>
+                        ${isAdmin() ? `
+                        <button class="btn btn-warning btn-sm" onclick="editMosque(${m.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteMosque(${m.id})"><i class="fas fa-trash"></i></button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openMosqueForm(mosqueData) {
+            document.getElementById('mosqueModalTitle').textContent = mosqueData ? 'تعديل مسجد' : 'إضافة مسجد';
+            document.getElementById('editMosqueId').value = mosqueData ? mosqueData.id : '';
+            document.getElementById('mosqueName').value = mosqueData ? mosqueData.name : '';
+            document.getElementById('mosqueGovernorate').value = mosqueData ? mosqueData.governorate : '';
+            document.getElementById('mosqueWilayat').value = mosqueData ? mosqueData.wilayat : '';
+            document.getElementById('mosqueLat').value = mosqueData ? mosqueData.lat : '';
+            document.getElementById('mosqueLng').value = mosqueData ? mosqueData.lng : '';
+            document.getElementById('mosqueModal').classList.add('active');
+        }
+
+        function editMosque(id) {
+            const mosque = getMosqueById(id);
+            if (mosque) openMosqueForm(mosque);
+        }
+
+        function saveMosque(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editMosqueId').value);
+            const name = document.getElementById('mosqueName').value.trim();
+            const governorate = document.getElementById('mosqueGovernorate').value;
+            const wilayat = document.getElementById('mosqueWilayat').value.trim();
+            const lat = document.getElementById('mosqueLat').value.trim();
+            const lng = document.getElementById('mosqueLng').value.trim();
+
+            if (!name || !governorate || !wilayat) {
+                showToast('يرجى تعبئة الحقول المطلوبة', 'error');
+                return false;
+            }
+
+            if (id) {
+                const mosque = getMosqueById(id);
+                if (mosque) {
+                    Object.assign(mosque, { name, governorate, wilayat, lat, lng });
+                    showToast('تم تعديل المسجد', 'success');
+                }
+            } else {
+                data.mosques.push({ id: generateId('mosques'), name, governorate, wilayat, town: '', lat, lng });
+                showToast('تم إضافة المسجد', 'success');
+            }
+
+            closeModal('mosqueModal');
+            populateSelects();
+            renderMosques();
+            updateDashboard();
+            return false;
+        }
+
+        function deleteMosque(id) {
+            if (confirm('هل أنت متأكد من حذف هذا المسجد؟')) {
+                if (getImamsByMosque(id).length > 0) {
+                    showToast('لا يمكن حذف المسجد لأنه يحتوي على أئمة', 'error');
+                    return;
+                }
+                data.mosques = data.mosques.filter(m => m.id !== id);
+                populateSelects();
+                renderMosques();
+                updateDashboard();
+                showToast('تم حذف المسجد', 'success');
+            }
+        }
+
+        // ============================================================
+        // ===== سجل الحضور =====
+        // ============================================================
+        function renderAttendance() {
+            const tbody = document.getElementById('attendanceTableBody');
+            let records = [...data.attendance];
+
+            if (data.currentRole === 'إمام') {
+                records = records.filter(a => a.imamId === data.currentUser.id);
+            }
+
+            if (records.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:25px;color:#888;">لا يوجد سجل حضور</td></tr>`;
+                return;
+            }
+
+            const sorted = records.sort((a, b) => b.id - a.id);
+            tbody.innerHTML = sorted.map(a => `
+                <tr>
+                    <td><strong>${getImamName(a.imamId)}</strong></td>
+                    <td>${a.prayer}</td>
+                    <td>${a.date}</td>
+                    <td><span class="badge ${a.status === 'حاضر' ? 'badge-success' : a.status === 'متأخر' ? 'badge-warning' : 'badge-danger'}">${a.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function filterAttendance() {
+            showToast('عرض جميع السجلات', 'info');
+            renderAttendance();
+        }
+
+        // ============================================================
+        // ===== التقارير =====
+        // ============================================================
+        function renderReports() {
+            const container = document.getElementById('reportsContainer');
+            let html = `<div class="report-card"><h4>📊 تقرير أداء الأئمة</h4></div>`;
+
+            data.imams.forEach(imam => {
+                const att = data.attendance.filter(a => a.imamId === imam.id);
+                const present = att.filter(a => a.status === 'حاضر').length;
+                const late = att.filter(a => a.status === 'متأخر').length;
+                const absent = att.filter(a => a.status === 'غائب').length;
+                const total = att.length || 1;
+                const rate = Math.round((present / total) * 100);
+
+                html += `
+                    <div class="report-card">
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+                            <div>
+                                <h4>👤 ${imam.name}</h4>
+                                <p style="font-size:11px;">🕌 ${getMosqueName(imam.mosqueId)}</p>
+                            </div>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                                <span><span class="badge badge-success">✅ ${present}</span></span>
+                                <span><span class="badge badge-warning">⏰ ${late}</span></span>
+                                <span><span class="badge badge-danger">❌ ${absent}</span></span>
+                                <span style="font-weight:700;color:#0f3460;">${rate}%</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar"><div class="fill" style="width:${rate}%;"></div></div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function generateReport() {
+            let report = 'تقرير أداء الأئمة\n';
+            report += '='.repeat(40) + '\n';
+            report += `التاريخ: ${getToday()}\n\n`;
+
+            data.imams.forEach(imam => {
+                const att = data.attendance.filter(a => a.imamId === imam.id);
+                const present = att.filter(a => a.status === 'حاضر').length;
+                const late = att.filter(a => a.status === 'متأخر').length;
+                const absent = att.filter(a => a.status === 'غائب').length;
+                const total = att.length || 1;
+                const rate = Math.round((present / total) * 100);
+
+                report += `الإمام: ${imam.name}\n`;
+                report += `المسجد: ${getMosqueName(imam.mosqueId)}\n`;
+                report += `حاضر: ${present} | متأخر: ${late} | غائب: ${absent}\n`;
+                report += `نسبة الالتزام: ${rate}%\n`;
+                report += '-'.repeat(30) + '\n';
+            });
+
+            const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `تقرير_الأئمة_${getToday()}.txt`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            showToast('تم تحميل التقرير', 'success');
+        }
+
+        // ============================================================
+        // ===== إعدادات النظام =====
+        // ============================================================
+        function updateSettingsPage() {
+            document.getElementById('systemName').value = data.settings.systemName;
+            document.getElementById('systemAuthority').value = data.settings.authority;
+
+            document.getElementById('systemStats').innerHTML = `
+                <div>👥 المستخدمين: ${data.users.length}</div>
+                <div>🕌 الأئمة: ${data.imams.length}</div>
+                <div>🏛️ المساجد: ${data.mosques.length}</div>
+                <div>📋 سجلات الحضور: ${data.attendance.length}</div>
+                <div>📅 التاريخ: ${getToday()}</div>
+                <div>👤 المسؤول العام: ${data.settings.adminName}</div>
+            `;
+        }
+
+        function saveSettings() {
+            data.settings.systemName = document.getElementById('systemName').value.trim();
+            data.settings.authority = document.getElementById('systemAuthority').value.trim();
+            showToast('تم حفظ الإعدادات', 'success');
+        }
+
+        // ============================================================
+        // ===== لوحة الإمام =====
+        // ============================================================
+        function updateImamDashboard() {
+            const imam = data.currentUser;
+            if (!imam) return;
+
+            const mosque = getMosqueById(imam.mosqueId);
+
+            document.getElementById('imamProfileData').innerHTML = `
+                <div><strong>الاسم:</strong> ${imam.name}</div>
+                <div><strong>الرقم المدني:</strong> ${imam.civilId}</div>
+                <div><strong>الرقم الوظيفي:</strong> ${imam.jobId}</div>
+                <div><strong>المسجد:</strong> ${getMosqueName(imam.mosqueId)}</div>
+                <div><strong>المحافظة:</strong> ${mosque ? mosque.governorate : '-'}</div>
+                <div><strong>الولاية:</strong> ${mosque ? mosque.wilayat : '-'}</div>
+            `;
+
+            const today = getToday();
+            const todayAtt = data.attendance.filter(a => a.imamId === imam.id && a.date === today);
+
+            let statusHtml = '';
+            PRAYERS.forEach(p => {
+                const record = todayAtt.find(a => a.prayer === p);
+                let cls = 'absent';
+                let label = '❌ غائب';
+                if (record) {
+                    if (record.status === 'حاضر') { cls = 'present';
+                        label = '✅ حاضر'; } else if (record.status === 'متأخر') { cls = 'late';
+                        label = '⏰ متأخر'; }
+                }
+                statusHtml += `<span class="prayer-item ${cls}">${p}: ${label}</span>`;
+            });
+            document.getElementById('todayPrayerStatus').innerHTML = statusHtml;
+
+            const present = todayAtt.filter(a => a.status === 'حاضر').length;
+            const late = todayAtt.filter(a => a.status === 'متأخر').length;
+            const absent = todayAtt.filter(a => a.status === 'غائب').length;
+            document.getElementById('todayAttendanceSummary').textContent =
+                `✅ حاضر: ${present} | ⏰ متأخر: ${late} | ❌ غائب: ${absent} من ${PRAYERS.length}`;
+
+            const allAtt = data.attendance.filter(a => a.imamId === imam.id);
+            const total = allAtt.length || 1;
+            const totalPresent = allAtt.filter(a => a.status === 'حاضر').length;
+            const totalLate = allAtt.filter(a => a.status === 'متأخر').length;
+            const totalAbsent = allAtt.filter(a => a.status === 'غائب').length;
+            const rate = Math.round((totalPresent / total) * 100);
+
+            document.getElementById('imamStats').innerHTML = `
+                <div style="display:flex;gap:15px;flex-wrap:wrap;font-size:13px;">
+                    <span><span class="badge badge-success">✅ ${totalPresent}</span></span>
+                    <span><span class="badge badge-warning">⏰ ${totalLate}</span></span>
+                    <span><span class="badge badge-danger">❌ ${totalAbsent}</span></span>
+                    <span style="font-weight:700;color:#0f3460;">${rate}%</span>
+                </div>
+                <div class="progress-bar"><div class="fill" style="width:${rate}%;"></div></div>
+            `;
+        }
+
+        // ============================================================
+        // ===== الكاميرا =====
+        // ============================================================
+        async function startCamera() {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    document.getElementById('cameraStatus').innerHTML = '⚠️ المتصفح لا يدعم الكاميرا';
+                    return;
+                }
+
+                const isSecure = window.location.protocol === 'https:' ||
+                    window.location.hostname === 'localhost' ||
+                    window.location.hostname === '127.0.0.1';
+
+                if (!isSecure) {
+                    document.getElementById('cameraStatus').innerHTML =
+                        '⚠️ استخدم HTTPS أو خادم محلي (localhost)';
+                    showToast('⚠️ تشغيل عبر خادم محلي مطلوب', 'error');
+                    return;
+                }
+
+                const constraints = {
+                    video: {
+                        facingMode: 'user',
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    }
+                };
+
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                data.cameraStream = stream;
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+                await video.play();
+                data.isCameraActive = true;
+                document.getElementById('cameraStatus').innerHTML = '✅ الكاميرا جاهزة';
+                document.getElementById('cameraStatus').style.background = 'rgba(40,167,69,0.8)';
+                showToast('✅ تم تشغيل الكاميرا', 'success');
+
+            } catch (err) {
+                console.error('Camera error:', err);
+                let errorMsg = '⚠️ تعذر تشغيل الكاميرا';
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    errorMsg = '⚠️ تم رفض إذن الكاميرا. امنح الإذن في المتصفح.';
+                } else if (err.name === 'NotFoundError') {
+                    errorMsg = '⚠️ لا توجد كاميرا متصلة';
+                }
+                document.getElementById('cameraStatus').innerHTML = errorMsg;
+                document.getElementById('cameraStatus').style.background = 'rgba(220,53,69,0.8)';
+                showToast(errorMsg, 'error');
+            }
+        }
+
+        function toggleCamera() {
+            if (data.cameraStream) {
+                data.cameraStream.getTracks().forEach(t => t.stop());
+                data.isCameraActive = false;
+                document.getElementById('cameraStatus').innerHTML = '⏳ إعادة التشغيل...';
+                document.getElementById('cameraStatus').style.background = 'rgba(0,0,0,0.7)';
+            }
+            setTimeout(startCamera, 300);
+        }
+
+        function captureAttendance() {
+            if (!data.isCameraActive) {
+                showToast('شغّل الكاميرا أولاً', 'error');
+                return;
+            }
+
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 320;
+            canvas.height = video.videoHeight || 240;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const resultDiv = document.getElementById('attendanceResult');
+            const success = Math.random() > 0.15;
+
+            if (success) {
+                const prayer = getCurrentPrayer();
+                const time = getCurrentTime();
+                const locationText = currentLocation ?
+                    `${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)}` :
+                    'غير محدد';
+
+                const mosque = getMosqueById(data.currentUser.mosqueId);
+                let locationValid = true;
+                let dist = 0;
+                if (currentLocation && mosque && mosque.lat && mosque.lng) {
+                    dist = getDistance(
+                        currentLocation.lat, currentLocation.lng,
+                        parseFloat(mosque.lat), parseFloat(mosque.lng)
+                    );
+                    if (dist > 500) locationValid = false;
+                }
+
+                if (!locationValid) {
+                    resultDiv.innerHTML = `
+                        <div style="padding:10px;background:#fff3cd;border-radius:8px;font-size:13px;border-right:3px solid #f1c40f;">
+                            ⚠️ خارج نطاق المسجد (${Math.round(dist)} متر)
+                        </div>
+                    `;
+                    showToast('خارج نطاق المسجد', 'error');
+                    return;
+                }
+
+                data.attendance.push({
+                    id: generateId('attendance'),
+                    imamId: data.currentUser.id,
+                    mosqueId: data.currentUser.mosqueId,
+                    prayer: prayer,
+                    date: getToday(),
+                    time: time,
+                    location: locationText,
+                    status: 'حاضر'
+                });
+
+                resultDiv.innerHTML = `
+                    <div style="padding:10px;background:#d4edda;border-radius:8px;font-size:13px;border-right:3px solid #28a745;">
+                        ✅ تم تسجيل حضور صلاة ${prayer}<br>
+                        <span style="font-size:11px;color:#155724;">${time} | ${locationText}</span>
+                    </div>
+                `;
+                showToast(`✅ تم تسجيل صلاة ${prayer}`, 'success');
+                updateImamDashboard();
+                renderAttendance();
+
+            } else {
+                resultDiv.innerHTML = `
+                    <div style="padding:10px;background:#f8d7da;border-radius:8px;font-size:13px;border-right:3px solid #dc3545;">
+                        ❌ فشل التحقق، حاول مرة أخرى
+                    </div>
+                `;
+                showToast('فشل التحقق من البصمة', 'error');
+            }
+        }
+
+        function getCurrentPrayer() {
+            const now = new Date();
+            const total = now.getHours() * 60 + now.getMinutes();
+            const prayerTimes = {
+                'الفجر': 4 * 60 + 30,
+                'الظهر': 12 * 60,
+                'العصر': 15 * 60 + 30,
+                'المغرب': 18 * 60 + 15,
+                'العشاء': 19 * 60 + 45
+            };
+            let closest = 'العشاء';
+            let closestDiff = Infinity;
+            for (const [name, time] of Object.entries(prayerTimes)) {
+                const diff = Math.abs(total - time);
+                if (diff < closestDiff) { closestDiff = diff;
+                    closest = name; }
+            }
+            return closest;
+        }
+
+        // ============================================================
+        // ===== الموقع =====
+        // ============================================================
+        function getLocation() {
+            const locationDisplay = document.getElementById('locationDisplay');
+
+            if (!navigator.geolocation) {
+                locationDisplay.innerHTML = '❌ المتصفح لا يدعم تحديد الموقع';
+                return;
+            }
+
+            const isSecure = window.location.protocol === 'https:' ||
+                window.location.hostname === 'localhost' ||
+                window.location.hostname === '127.0.0.1';
+
+            if (!isSecure) {
+                locationDisplay.innerHTML = '⚠️ استخدم HTTPS أو خادم محلي (localhost)';
+                showToast('⚠️ تشغيل عبر خادم محلي مطلوب', 'error');
+                return;
+            }
+
+            locationDisplay.innerHTML = '<div>⏳ جاري تحديد الموقع...</div>';
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    currentLocation = {
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude,
+                        accuracy: pos.coords.accuracy
+                    };
+                    locationDisplay.innerHTML = `
+                        <div>📍 الموقع الحالي</div>
+                        <div class="coord">خط الطول: ${currentLocation.lat.toFixed(6)}</div>
+                        <div class="coord">خط العرض: ${currentLocation.lng.toFixed(6)}</div>
+                        <div style="font-size:11px;color:#28a745;">✅ تم التحديد</div>
+                    `;
+                    showToast('✅ تم تحديد الموقع', 'success');
+                },
+                (err) => {
+                    let errorMsg = '❌ تعذر تحديد الموقع';
+                    if (err.code === 1) errorMsg = '❌ تم رفض إذن الموقع';
+                    else if (err.code === 2) errorMsg = '❌ الموقع غير متوفر';
+                    else if (err.code === 3) errorMsg = '❌ انتهت المهلة';
+                    locationDisplay.innerHTML = `<div>${errorMsg}</div>`;
+                    showToast(errorMsg, 'error');
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 10000
+                }
+            );
+        }
+
+        function getDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371000;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        // ============================================================
+        // ===== وظائف عامة =====
+        // ============================================================
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            toast.style.display = 'block';
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+        }
+
+        document.querySelectorAll('.form-modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('appContainer').style.display = 'none';
+            console.log('🕌 نظام متابعة الأئمة - سلطنة عمان');
+            console.log('👤 admin / 123456 | supervisor / 123456 | ahmed / 123456');
+        });
+    </script>
+</body>
+</html>
